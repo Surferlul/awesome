@@ -162,7 +162,7 @@ local tasklist_buttons = gears.table.join(
                                               awful.client.focus.byidx(-1)
                                           end))
 
-local function set_wallpaper(s)
+--[[local function set_wallpaper(s)
     -- Wallpaper
     if beautiful.wallpaper then
         local wallpaper = beautiful.wallpaper
@@ -172,6 +172,23 @@ local function set_wallpaper(s)
         end
         gears.wallpaper.maximized(wallpaper, s, true)
     end
+end--]]
+
+--[[local function set_wallpaper(s)
+	wallpaper_safety =	function(arg)	if 	type(arg) == "table" then	return tostring( arg[s.index] or "" )
+						elseif	type(arg) == "string" then	return arg
+						else 					return ""
+						end
+				end
+	gears.wallpaper.maximized( wallpaper_safety( beautiful.wallpaper ), s, true )
+end--]]
+
+local function set_wallpaper(s)
+	if s.geometry["width"] == 1920 and s.geometry["height"] == 1080 then
+		gears.wallpaper.maximized( beautiful.wallpaper[1], s, true )
+	else                                
+		gears.wallpaper.maximized( beautiful.wallpaper[2], s, true )
+        end
 end
 
 ----

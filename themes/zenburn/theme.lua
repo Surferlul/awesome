@@ -11,7 +11,8 @@ local beautiful = require("beautiful")
 
 -- {{{ Main
 local theme = {}
-theme.wallpaper = "/home/surferlul/.config/awesome/themes/zenburn/artix_wallpaper.png"
+theme.dir = "/home/surferlul/.config/awesome/themes/zenburn/"
+theme.wallpaper = { theme.dir .. "dreams_1920x1080.png" , theme.dir .. "dreams.png" }
 -- }}}
 
 
@@ -22,9 +23,9 @@ theme.font      = "sans 8"
 theme.fg_normal  = "#EDEDDD"
 theme.fg_focus   = "#F0DFAF"
 theme.fg_urgent  = "#CC9393"
-theme.bg_normal  = "#4A3F9833"
-theme.bg_focus   = "#080811CC"
-theme.bg_urgent  = "#916A9D33"
+theme.bg_normal  = "#4A3F9877"
+theme.bg_focus   = "#080811BB"
+theme.bg_urgent  = "#916A9D77"
 theme.bg_systray = theme.bg_normal
 -- }}}
 
