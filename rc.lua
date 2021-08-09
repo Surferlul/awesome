@@ -380,9 +380,48 @@ local function set_wallpaper(s)
 end
 
 ----
-
-datewidget = wibox.widget.textbox()
-vicious.register(datewidget, vicious.widgets.date, "%m %d %H %M %S", 1)
+local dw = {}
+for i=1,5 do
+    dw[i] = wibox.widget.textbox()
+end
+vicious.register(dw[1], vicious.widgets.date, "%m")
+vicious.register(dw[2], vicious.widgets.date, "%d")
+vicious.register(dw[3], vicious.widgets.date, "%H")
+vicious.register(dw[4], vicious.widgets.date, "%M", 1)
+vicious.register(dw[5], vicious.widgets.date, "%S", 1)
+local spacer = {
+    {
+        {
+            color  = '#dddddd',
+            shape  = function (cr, width, height) gears.shape.powerline(cr, width/2, height, height/8) end,
+       	    widget = wibox.widget.separator,
+        },
+        layout = wibox.container.rotate,
+        direction = "east",
+    },
+    layout = wibox.layout.constraint,
+    strategy = "max",
+    height = 8,
+}
+local datewidget = {
+    spacing = -8,
+    layout = wibox.layout.fixed.vertical,
+}
+for k, v in pairs(dw) do
+    datewidget[k + 1] = {
+        spacer,
+	{
+		widget = wibox.container.margin,
+		left = -2,
+		{
+			widget=v,
+			align = "center",
+		}
+	},
+        layout = wibox.layout.fixed.vertical,
+	spacing = -4,
+    }
+end
 
 --memwidget = wibox.widget.textbox()
 --vicious.cache(vicious.widgets.mem)
@@ -581,27 +620,20 @@ s.mytaglist = awful.widget.taglist {
                         memwidget,
                         swapwidget,
                         cpuwidget,
-                        {
-                            layout = wibox.container.rotate,
-                            direction = "east",
-                            mykeyboardlayout.widget,
-			},
 			{
-                            forced_width = 1,
-                            orientation = "vertical",
-	                    widget = wibox.widget.separator
-			},
-			{
-                            thickness = 0,
-			    forced_width = 6,
-                            orientation = "vertical",
-	                    widget = wibox.widget.separator
-			},
-			{
-                            layout = wibox.container.rotate,
-			    direction = "east",
-                            datewidget,
-			},
+			    {
+                                layout = wibox.container.rotate,
+                                direction = "east",
+                                mykeyboardlayout.widget,
+		            },
+			    {
+                                layout = wibox.container.rotate,
+			        direction = "east",
+                                datewidget,
+		            },
+			    layout = wibox.layout.fixed.horizontal,
+			    spacing = -5,
+                        },
                         s.mylayoutbox,
                     },
                 },
