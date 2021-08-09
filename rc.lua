@@ -3,6 +3,7 @@
 pcall(require, "luarocks.loader")
 
 -- Standard awesome library
+local capi = {awesome = awesome}
 local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
@@ -13,15 +14,191 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
-local hotkeys_popup = require("awful.hotkeys_popup")
+local menu_width = 200
+local tmp_screen = { 1080, 1920 }
+menubar.geometry = { height = tmp_screen[1], width = menu_width, x = tmp_screen[2] - menu_width }
+
+
+--local hotkeys_popup = require("awful.hotkeys_popup")
+local hotkeys = require("awful.hotkeys_popup");
 --local hotkeys = require("awful.hotkeys_popup")
 --local hotkeys_popup = hotkeys_popup.widget.new({ width = 100, height = 100 })
 --hotkeys_popup.show_help = hotkeys_popup.widget.show_help
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
-require("awful.hotkeys_popup.keys.vim")
---local cairo = require("lgi").cairo
+--vim = require("awful.hotkeys_popup.keys.vim")
+local my_hotkeys_popup = hotkeys.widget.new({ width = 1870, height = 1050});
 
+
+local vim_rule_any = {name={"vim", "VIM"}}
+for group_name, group_data in pairs({
+    ["VIM: motion"] =             { color="#009F00", rule_any=vim_rule_any },
+    ["VIM: command"] =            { color="#aFaF00", rule_any=vim_rule_any },
+    ["VIM: command (insert)"] =   { color="#cF4F40", rule_any=vim_rule_any },
+    ["VIM: operator"] =           { color="#aF6F00", rule_any=vim_rule_any },
+    ["VIM: find"] =               { color="#65cF9F", rule_any=vim_rule_any },
+    ["VIM: scroll"] =             { color="#659FdF", rule_any=vim_rule_any },
+}) do
+    my_hotkeys_popup:add_group_rules(group_name, group_data)
+end
+
+
+local vim_keys = {
+
+    ["VIM: motion"] = {{
+        modifiers = {},
+        keys = {
+            ['`']="goto mark",
+            ['0']='"hard" BOL',
+            ['-']="prev line",
+            w="next word",
+            e="end word",
+            ['[']=". misc",
+            [']']=". misc",
+            ["'"]=". goto mk. BOL",
+            b="prev word",
+            ["|"]='BOL/goto col',
+            ["$"]='EOL',
+            ["%"]='goto matching bracket',
+            ["^"]='"soft" BOL',
+            ["("]='sentence begin',
+            [")"]='sentence end',
+            ["_"]='"soft" BOL down',
+            ["+"]='next line',
+            W='next WORD',
+            E='end WORD',
+            ['{']="paragraph begin",
+            ['}']="paragraph end",
+            G='EOF/goto line',
+            H='move cursor to screen top',
+            M='move cursor to screen middle',
+            L='move cursor to screen bottom',
+            B='prev WORD',
+        }
+    }, {
+        modifiers = {"Ctrl"},
+        keys = {
+            u="half page up",
+            d="half page down",
+            b="page up",
+            f="page down",
+            o="prev mark",
+        }
+    }},
+
+    ["VIM: operator"] = {{
+        modifiers = {},
+        keys = {
+            ['=']="auto format",
+            y="yank",
+            d="delete",
+            c="change",
+            ["!"]='external filter',
+            ['&lt;']='unindent',
+            ['&gt;']='indent',
+        }
+    }},
+
+    ["VIM: command"] = {{
+        modifiers = {},
+        keys = {
+            ['~']="toggle case",
+            q=". record macro",
+            r=". replace char",
+            u="undo",
+            p="paste after",
+            gg="go to the top of file",
+            gf="open file under cursor",
+            x="delete char",
+            v="visual mode",
+            m=". set mark",
+            ['.']="repeat command",
+            ["@"]='. play macro',
+            ["&amp;"]='repeat :s',
+            Q='ex mode',
+            Y='yank line',
+            U='undo line',
+            P='paste before cursor',
+            D='delete to EOL',
+            J='join lines',
+            K='help',
+            [':']='ex cmd line',
+            ['"']='. register spec',
+            ZZ='quit and save',
+            ZQ='quit discarding changes',
+            X='back-delete',
+            V='visual lines selection',
+        }
+    }, {
+        modifiers = {"Ctrl"},
+        keys = {
+            w=". window operations",
+            r="redo",
+            ["["]="normal mode",
+            a="increase number",
+            x="decrease number",
+            g="file/cursor info",
+            z="suspend",
+            c="cancel/normal mode",
+            v="visual block selection",
+        }
+    }},
+
+    ["VIM: command (insert)"] = {{
+        modifiers = {},
+        keys = {
+            i="insert mode",
+            o="open below",
+            a="append",
+            s="subst char",
+            R='replace mode',
+            I='insert at BOL',
+            O='open above',
+            A='append at EOL',
+            S='subst line',
+            C='change to EOL',
+        }
+    }},
+
+    ["VIM: find"] = {{
+        modifiers = {},
+        keys = {
+            [';']="repeat t/T/f/F",
+            [',']="reverse t/T/f/F",
+            ['/']=". find",
+            ['?']='. reverse find',
+            n="next search match",
+            N='prev search match',
+            f=". find char",
+            F='. reverse find char',
+            t=". 'till char",
+            T=". reverse 'till char",
+            ["*"]='find word under cursor',
+            ["#"]='reverse find under cursor',
+        }
+    }},
+
+    ["VIM: scroll"] = {{
+        modifiers = {},
+        keys = {
+            zt="scroll cursor to the top",
+            zz="scroll cursor to the center",
+            zb="scroll cursor to the bottom",
+        }
+    },{
+        modifiers = {"Ctrl"},
+        keys = {
+            e="scroll line up",
+            y="scroll line down",
+        }
+    }},
+}
+
+my_hotkeys_popup:add_hotkeys(vim_keys)
+
+--my_hotkeys_popup.keys.vim = vim
+--local cairo = require("lgi").cairo
+ 
 -- My custom libs
 local vicious = require("vicious")
 
@@ -75,6 +252,7 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
+    awful.layout.suit.spiral,
     awful.layout.suit.floating,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
@@ -82,7 +260,6 @@ awful.layout.layouts = {
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
     awful.layout.suit.max.fullscreen,
@@ -97,7 +274,7 @@ awful.layout.layouts = {
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 myawesomemenu = {
-   { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
+   { "hotkeys", function() my_hotkeys_popup:show_help(nil, awful.screen.focused()) end },
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
@@ -119,7 +296,18 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- Keyboard map indicator and switcher
 mykeyboardlayout = awful.widget.keyboardlayout()
-
+--mykeyboardlayout.widget.forced_height = 20
+--mykeyboardlayout.widget.text = mykeyboardlayout.widget.text:gsub("%s+", "")
+--mykeyboardlayout.widget.forced_width = 20
+local clean_textbox = function(w)
+	w.text = w.text:sub(2)
+	w.text = w.text:sub(1, -2)
+end
+capi.awesome.connect_signal("xkb::map_changed",
+                            function () clean_textbox(mykeyboardlayout.widget) end)
+capi.awesome.connect_signal("xkb::group_changed",
+                            function () clean_textbox(mykeyboardlayout.widget) end)
+clean_textbox(mykeyboardlayout.widget)
 -- {{{ Wibar
 
 -- Create a wibox for each screen and add it
@@ -194,7 +382,7 @@ end
 ----
 
 datewidget = wibox.widget.textbox()
-vicious.register(datewidget, vicious.widgets.date, "%b %d, %R ")
+vicious.register(datewidget, vicious.widgets.date, "%m %d %H %M %S", 1)
 
 --memwidget = wibox.widget.textbox()
 --vicious.cache(vicious.widgets.mem)
@@ -204,16 +392,19 @@ vicious.register(datewidget, vicious.widgets.date, "%b %d, %R ")
 batwidget = wibox.widget.progressbar()
 batbox = wibox.layout.margin(
     wibox.widget{ { max_value = 1, widget = batwidget,
-                    border_width = 0.5, border_color = "#000000",
-                    color = { type = "linear",
-                              from = { 0, 0 },
-                              to = { 0, 30 },
-                              stops = { { 0, "#AECF96" },
-                                        { 1, "#FF5656" } } } },
-                  forced_height = 10, forced_width = 8,
-                  direction = 'east', color = beautiful.fg_widget,
+                    border_width = 0, border_color = "#000000",
+                    color = "#FFFFFF",
+		    background_color = "#000000"
+	    },
+		    --color = { type = "linear",
+                    --          from = { 0, 0 },
+                    --          to = { 0, 30 },
+                    --          stops = { { 0, "#FFFFFF" },
+                    --                    { 1, "#000000" } } } },
+                  forced_height = 1, forced_width = 1,
+                  direction = 'south', color = beautiful.fg_widget,
                   layout = wibox.container.rotate },
-    1, 4, 1, 1)
+    0, 0, 0, 0)
 
 -- Register battery widget
 vicious.register(batwidget, vicious.widgets.bat, "$2", 1, "BAT1")
@@ -269,11 +460,87 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist {
-        screen  = s,
-        filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
-    }
+    --s.mytaglist = awful.widget.taglist {
+    --    screen  = s,
+    --    filter  = awful.widget.taglist.filter.all,
+    --    buttons = taglist_buttons
+    --}
+s.mytaglist = awful.widget.taglist {
+    screen  = s,
+    filter  = awful.widget.taglist.filter.all,
+    style   = {
+        shape = function (cr, width, height) gears.shape.powerline(cr, width*8/10, height, height/4) end
+    },
+    layout   = {
+        spacing = -14,
+        spacing_widget = {
+            color  = '#dddddd',
+            shape  = function (cr, width, height) gears.shape.powerline(cr, width/2, height, height/4) end,
+            widget = wibox.widget.separator,
+        },
+        layout  = wibox.layout.fixed.horizontal
+    },
+    widget_template = {
+        {
+            {
+                {
+                    {
+                        --{
+			    {
+                                id     = 'index_role',
+				font   = "Indie Flower Bold 11",
+                                widget = wibox.widget.textbox,
+                            },
+                            
+                            widget  = wibox.container.place,
+                        --},
+                        --bg     = '#55000044',
+                        --shape  = gears.shape.circle,
+                        --widget = wibox.container.background,
+                    },
+		    layout = wibox.container.rotate,
+		    direction = "east",
+	        },
+		--{
+                --    {
+                --        id     = 'icon_role',
+                --        widget = wibox.widget.imagebox,
+                --    },
+                --    margins = 2,
+                --    widget  = wibox.container.margin,
+                --},
+                --{
+                --    id     = 'text_role',
+                --    widget = wibox.widget.textbox,
+                --},
+                layout = wibox.layout.fixed.horizontal,
+            },
+            left  = 5,
+            right = 9,
+            widget = wibox.container.margin
+        },
+        id     = 'background_role',
+        widget = wibox.container.background,
+        -- Add support for hover colors and an index label
+        create_callback = function(self, c3, index, objects) --luacheck: no unused args
+            self:get_children_by_id('index_role')[1].markup = '<b>'..index..'</b>'
+            --self:connect_signal('mouse::enter', function()
+            --    if self.bg ~= '#ff000033' then
+            --        self.backup     = self.bg
+            --        self.has_backup = true
+            --    end
+            --    self.bg = '#ff00ff55'
+            --end)
+            --self:connect_signal('mouse::leave', function()
+            --    if self.has_backup then self.bg = self.backup end
+            --end)
+        end,
+        --update_callback = function(self, c3, index, objects) --luacheck: no unused args
+        --    self:get_children_by_id('index_role')[1].markup = '<b> '..index..' </b>'
+        --end,
+    },
+    buttons = taglist_buttons
+}
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
@@ -283,29 +550,79 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "bottom", screen = s })
+    s.mywibox = awful.wibar({ position = "left", screen = s })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            mylauncher,
-            s.mytaglist,
-            s.mypromptbox,
-        },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
-            memwidget,
-            swapwidget,
-            cpuwidget,
-            mykeyboardlayout,
-            datewidget,
-            batbox,
-            s.mylayoutbox,
-        },
+        layout = wibox.container.rotate,
+	direction = "west",
+	{
+	    layout = wibox.layout.align.vertical,
+	    {
+		layout = wibox.layout.constraint,
+		strategy = "max",
+		height = 18,
+		{
+	            layout = wibox.layout.align.horizontal,
+                    { -- Left widgets
+                        layout = wibox.layout.fixed.horizontal,
+			{
+			    layout = wibox.container.rotate,
+			    direction = "east",
+			    mylauncher,
+			},
+                        s.mytaglist,
+                        s.mypromptbox,
+                    },
+                    s.mytasklist, -- Middle widget
+                    { -- Right widgets
+                        layout = wibox.layout.fixed.horizontal,
+                        wibox.widget.systray(),
+                        memwidget,
+                        swapwidget,
+                        cpuwidget,
+                        {
+                            layout = wibox.container.rotate,
+                            direction = "east",
+                            mykeyboardlayout.widget,
+			},
+			{
+                            forced_width = 1,
+                            orientation = "vertical",
+	                    widget = wibox.widget.separator
+			},
+			{
+                            thickness = 0,
+			    forced_width = 6,
+                            orientation = "vertical",
+	                    widget = wibox.widget.separator
+			},
+			{
+                            layout = wibox.container.rotate,
+			    direction = "east",
+                            datewidget,
+			},
+                        s.mylayoutbox,
+                    },
+                },
+	    },
+	    {
+		layout = wibox.layout.constraint,
+		{
+		    layout = wibox.layout.flex.horizontal,
+                    {
+                        layout = wibox.container.rotate,
+			direction = "north",
+			batbox,
+		    },
+		    {
+                        layout = wibox.container.rotate,
+			direction = "south",
+                        batbox,
+		    }
+		}
+	    }
+        }
     }
 end)
 -- }}}
@@ -320,7 +637,10 @@ root.buttons(gears.table.join(
 
 -- {{{ Key bindings
 globalkeys = gears.table.join(
-    awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
+    awful.key({ modkey,           }, "s",
+    		function ()
+			my_hotkeys_popup:show_help(nil, awful.screen.focused())
+		end,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
               {description = "view previous", group = "tag"}),
@@ -601,7 +921,7 @@ client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     -- if not awesome.startup then awful.client.setslave(c) end
-
+    c.shape = beautiful.shape
     if awesome.startup
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
@@ -661,7 +981,16 @@ end)
 client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
-
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+--beautiful.border_normal = "#00000055"
+--beautiful.border_focus = "#00000000"
+client.connect_signal("focus", function(c)
+	c.border_color = beautiful.border_focus
+	c.border_width = beautiful.border_width_focus
+end)
+client.connect_signal("unfocus", function(c) 
+	c.border_color = beautiful.border_normal
+	c.border_width = beautiful.border_width
+	c.useless_gap = 0
+end)
+ 
 -- }}}

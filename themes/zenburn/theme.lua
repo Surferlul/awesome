@@ -5,9 +5,10 @@
 --        By Adrian C. (anrxc)        --
 ----------------------------------------
 
-local themes_path = require("gears.filesystem").get_themes_dir()
+local themes_path = "/home/surferlul/.config/awesome/themes/"
 local dpi = require("beautiful.xresources").apply_dpi
 local beautiful = require("beautiful")
+local gears = require("gears")
 
 -- {{{ Main
 local theme = {}
@@ -34,9 +35,9 @@ theme.hotkeys_fg        = "#EEEEFF"
 theme.hotkeys_label_fg  = "#111122"
 theme.hotkeys_modifiers_fg = "#DD7777"
 theme.hotkeys_description_font = "Indie Flower Bold 10"
-theme.hotkeys_border_width = 1
+theme.hotkeys_border_width = 2
 theme.hotkeys_border_color = "#6f6f6f55"
-
+theme.hotkeys_shape = function(cr, width, height) gears.shape.rounded_rect(cr, width, height, 15) end
 theme.menubar_bg_normal = "#11112299"
 theme.menubar_fg_normal = "#FFBBBB"
 theme.menubar_bg_focus  = "#333344FF"
@@ -48,10 +49,12 @@ theme.menu_bg_focus  = "#333344FF"
 theme.menu_fg_focus  = "#BBBBFF"
 
 -- {{{ Borders
-theme.useless_gap   = dpi(2)
-theme.border_width  = dpi(1)
-theme.border_normal = "#6F6F6F55"
-theme.border_focus  = "#6F6F6F55"
+theme.shape = function(cr, width, height) gears.shape.rounded_rect(cr, width, height, 4) end
+theme.useless_gap   = 2
+theme.border_width  = 2
+theme.border_width_focus = 2
+theme.border_normal = "#00000077" -- basically no border
+theme.border_focus = "#00000000" -- slightly more lit up than the shadow
 theme.border_marked = "#CC939355"
 -- }}}
 
@@ -103,7 +106,7 @@ theme.taglist_squares_unsel = themes_path .. "zenburn/taglist/squarez.png"
 
 -- {{{ Misc
 theme.awesome_icon           = themes_path .. "zenburn/awesome-icon.png"
-theme.menu_submenu_icon      = themes_path .. "default/submenu.png"
+theme.menu_submenu_icon      = themes_path .. "zenburn/submenu.png"
 -- }}}
 
 -- {{{ Layout
