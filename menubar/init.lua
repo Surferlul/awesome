@@ -157,7 +157,7 @@ end
 -- @return item name, item background color, background image, item icon, item args.
 local function label(o)
     local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
-    local bg_color = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
+    local bg_color = theme.menubar_tag_bg_normal or theme.menu_tag_bg_normal or theme.tag_bg_normal or "#00000000" -- option to set tag background color different than background color. Needed because the normal way would make tags darker than the background anyways -> was annoying
     if o.focused then
         fg_color = theme.menubar_fg_focus or theme.menu_fg_focus or theme.fg_focus
         bg_color = theme.menubar_bg_focus or theme.menu_bg_focus or theme.bg_focus
@@ -561,6 +561,7 @@ function menubar.show(scr)
         end,
         keypressed_callback = prompt_keypressed_callback
     }
+    default_prompt_args.textbox.forced_height = 18
 
     awful.prompt.run(setmetatable(menubar.prompt_args, {__index=default_prompt_args}))
 

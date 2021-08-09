@@ -16,7 +16,7 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local menu_width = 200
 local tmp_screen = { 1080, 1920 }
-menubar.geometry = { height = tmp_screen[1], width = menu_width, x = tmp_screen[2] - menu_width }
+menubar.geometry = { height = tmp_screen[1], width = menu_width, x = 20 }
 
 
 --local hotkeys_popup = require("awful.hotkeys_popup")
