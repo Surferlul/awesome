@@ -10,9 +10,10 @@ local dpi = require("beautiful.xresources").apply_dpi
 local beautiful = require("beautiful")
 local gears = require("gears")
 
+
 -- {{{ Main
 local theme = {}
-theme.dir = "/home/surferlul/.config/awesome/themes/zenburn/"
+theme.dir = themes_path.."zenburn/"
 theme.wallpaper = { theme.dir .. "dreams_1920x1080.png" , theme.dir .. "dreams.png" }
 -- }}}
 
@@ -99,33 +100,33 @@ theme.menu_width  = dpi(100)
 
 -- {{{ Icons
 -- {{{ Taglist
-theme.taglist_squares_sel   = themes_path .. "zenburn/taglist/squarefz.png"
-theme.taglist_squares_unsel = themes_path .. "zenburn/taglist/squarez.png"
+theme.taglist_squares_sel   = theme.dir .. "taglist/squarefz.png"
+theme.taglist_squares_unsel = theme.dir .. "taglist/squarez.png"
 --theme.taglist_squares_resize = "false"
 -- }}}
 
 -- {{{ Misc
-theme.awesome_icon           = themes_path .. "zenburn/awesome-icon.png"
-theme.menu_submenu_icon      = themes_path .. "zenburn/submenu.png"
+theme.awesome_icon           = theme.dir .. "awesome-icon.png"
+theme.menu_submenu_icon      = theme.dir .. "submenu.png"
 -- }}}
 
 -- {{{ Layout
-theme.layout_tile       = themes_path .. "zenburn/layouts/tile.png"
-theme.layout_tileleft   = themes_path .. "zenburn/layouts/tileleft.png"
-theme.layout_tilebottom = themes_path .. "zenburn/layouts/tilebottom.png"
-theme.layout_tiletop    = themes_path .. "zenburn/layouts/tiletop.png"
-theme.layout_fairv      = themes_path .. "zenburn/layouts/fairv.png"
-theme.layout_fairh      = themes_path .. "zenburn/layouts/fairh.png"
-theme.layout_spiral     = themes_path .. "zenburn/layouts/spiral.png"
-theme.layout_dwindle    = themes_path .. "zenburn/layouts/dwindle.png"
-theme.layout_max        = themes_path .. "zenburn/layouts/max.png"
-theme.layout_fullscreen = themes_path .. "zenburn/layouts/fullscreen.png"
-theme.layout_magnifier  = themes_path .. "zenburn/layouts/magnifier.png"
-theme.layout_floating   = themes_path .. "zenburn/layouts/floating.png"
-theme.layout_cornernw   = themes_path .. "zenburn/layouts/cornernw.png"
-theme.layout_cornerne   = themes_path .. "zenburn/layouts/cornerne.png"
-theme.layout_cornersw   = themes_path .. "zenburn/layouts/cornersw.png"
-theme.layout_cornerse   = themes_path .. "zenburn/layouts/cornerse.png"
+theme.layout_tile       = theme.dir .. "layouts/tile.png"
+theme.layout_tileleft   = theme.dir .. "layouts/tileleft.png"
+theme.layout_tilebottom = theme.dir .. "layouts/tilebottom.png"
+theme.layout_tiletop    = theme.dir .. "layouts/tiletop.png"
+theme.layout_fairv      = theme.dir .. "layouts/fairv.png"
+theme.layout_fairh      = theme.dir .. "layouts/fairh.png"
+theme.layout_spiral     = theme.dir .. "layouts/spiral.png"
+theme.layout_dwindle    = theme.dir .. "layouts/dwindle.png"
+theme.layout_max        = theme.dir .. "layouts/max.png"
+theme.layout_fullscreen = theme.dir .. "layouts/fullscreen.png"
+theme.layout_magnifier  = theme.dir .. "layouts/magnifier.png"
+theme.layout_floating   = theme.dir .. "layouts/floating.png"
+theme.layout_cornernw   = theme.dir .. "layouts/cornernw.png"
+theme.layout_cornerne   = theme.dir .. "layouts/cornerne.png"
+theme.layout_cornersw   = theme.dir .. "layouts/cornersw.png"
+theme.layout_cornerse   = theme.dir .. "layouts/cornerse.png"
 -- }}}
 
 -- {{{ Titlebar
