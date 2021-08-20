@@ -227,6 +227,19 @@ do
 end
 -- }}}
 
+-- {{{ Startup Commands
+do
+    local cmds = 
+    {
+        string.format("%s/.config/awesome/startup.sh", os.getenv("HOME")),
+    }
+
+    for _,i in pairs(cmds) do
+        awful.util.spawn(i)
+    end
+end
+-- }}}
+
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 --beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
@@ -901,7 +914,10 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
-                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
+                     placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+		     maximized_horizontal = false,
+                     maximized_vertical = false,
+                     maximized = false,
      }
     },
 
