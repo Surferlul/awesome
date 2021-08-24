@@ -12,4 +12,4 @@ echo "Moving configs to install location"
 mv $CACHE_DIR $HOME/.config/awesome
 [ "$1" != "--preserve-git" ] && rm -rf $HOME/.config/awesome/.git
 [ ! -d "$HOME/.fonts" ] && echo "Creating ~/.fonts directory" && mkdir $HOME/.fonts
-[ -z "$(ls $HOME/.fonts | grep "[Ii]ndie *[Ff]lower")" ] && echo "Indie Flower doesn't exist, installing" && mkdir $CACHE_DIR && curl 'https://google-webfonts-helper.herokuapp.com/api/fonts/indie-flower?download=zip&subsets=latin&variants=regular' > $CACHE_DIR/IndieFlower.zip && 7z e -y $CACHE_DIR/IndieFlower.zip -o$CACHE_DIR/ && cp $CACHE_DIR/*.ttf $HOME/.fonts && rm -rf $CACHE_DIR
+[ -z '$(ls $HOME/.fonts | grep "[Ii]ndie *[Ff]lower")' ] && echo "Indie Flower doesn't exist, installing" && mkdir $CACHE_DIR && curl 'https://google-webfonts-helper.herokuapp.com/api/fonts/indie-flower?download=zip&subsets=latin&variants=regular' > $CACHE_DIR/IndieFlower.zip && 7z e -y $CACHE_DIR/IndieFlower.zip -o$CACHE_DIR/ && cp $CACHE_DIR/*.ttf $HOME/.fonts && rm -rf $CACHE_DIR
