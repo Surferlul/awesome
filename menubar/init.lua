@@ -1,28 +1,22 @@
 ---------------------------------------------------------------------------
---- Menubar module, which aims to provide a freedesktop menu alternative.
+--- Menubar module, which aims to provide a freedesktop menu alternative
 --
 -- List of menubar keybindings:
 -- ---
 --
--- <table class='widget_list' border=1>
--- <tr style='font-weight: bold;'>
---  <th align='center'>Keybinding</th>
---  <th align='center'>Description</th>
--- </tr>                                                                                    </td></tr>
---  <tr><td><kbd>Left</kbd><kbd>C-j</kbd></td><td> select an item on the left                 </td></tr>
---  <tr><td><kbd>Right</kbd><kbd>C-k</kbd></td><td> select an item on the right                </td></tr>
---  <tr><td><kbd>Backspace    </kbd></td><td> exit the current category if we are in any </td></tr>
---  <tr><td><kbd>Escape       </kbd></td><td> exit the current directory or exit menubar </td></tr>
---  <tr><td><kbd>Home         </kbd></td><td> select the first item                      </td></tr>
---  <tr><td><kbd>End          </kbd></td><td> select the last                            </td></tr>
---  <tr><td><kbd>Return       </kbd></td><td> execute the entry                          </td></tr>
---  <tr><td><kbd>C-Return     </kbd></td><td> execute the command with awful.spawn       </td></tr>
---  <tr><td><kbd>C-M-Return   </kbd></td><td> execute the command in a terminal          </td></tr>
--- </table>
+--  *  "Left"  | "C-j" select an item on the left
+--  *  "Right" | "C-k" select an item on the right
+--  *  "Backspace"     exit the current category if we are in any
+--  *  "Escape"        exit the current directory or exit menubar
+--  *  "Home"          select the first item
+--  *  "End"           select the last
+--  *  "Return"        execute the entry
+--  *  "C-Return"      execute the command with awful.spawn
+--  *  "C-M-Return"    execute the command in a terminal
 --
 -- @author Alexander Yakushev &lt;yakushev.alex@gmail.com&gt;
 -- @copyright 2011-2012 Alexander Yakushev
--- @popupmod menubar
+-- @module menubar
 ---------------------------------------------------------------------------
 
 -- Grab environment we need
@@ -48,11 +42,9 @@ end
 
 --- Menubar normal text color.
 -- @beautiful beautiful.menubar_fg_normal
--- @param color
 
 --- Menubar normal background color.
 -- @beautiful beautiful.menubar_bg_normal
--- @param color
 
 --- Menubar border width.
 -- @beautiful beautiful.menubar_border_width
@@ -60,26 +52,19 @@ end
 
 --- Menubar border color.
 -- @beautiful beautiful.menubar_border_color
--- @param color
 
 --- Menubar selected item text color.
--- @beautiful beautiful.menubar_fg_focus
--- @param color
+-- @beautiful beautiful.menubar_fg_normal
 
 --- Menubar selected item background color.
--- @beautiful beautiful.menubar_bg_focus
--- @param color
-
---- Menubar font.
--- @beautiful beautiful.menubar_font
--- @param[opt=beautiful.font] font
+-- @beautiful beautiful.menubar_bg_normal
 
 
 -- menubar
 local menubar = { menu_entries = {} }
 menubar.menu_gen = require("menubar.menu_gen")
 menubar.utils = require("menubar.utils")
-
+local compute_text_width = menubar.utils.compute_text_width
 
 
 local current_page = {}
@@ -95,10 +80,6 @@ menubar.cache_entries = true
 -- entries.
 -- @tfield[opt=true] boolean show_categories
 menubar.show_categories = true
-
---- When false will hide results if the current query is empty
--- @tfield[opt=true] boolean match_empty
-menubar.match_empty = true
 
 --- Specifies the geometry of the menubar. This is a table with the keys
 -- x, y, width and height. Missing values are replaced via the screen's
@@ -125,12 +106,13 @@ menubar.right_label = "▶▶ "
 -- @tfield[opt="◀◀"] string left_label
 menubar.left_label = "◀◀ "
 
--- awful.widget.common.list_update adds spacing of dpi(4) between items.
--- @tfield number list_spacing
-local list_spacing = theme.xresources.apply_dpi(4)
+-- awful.widget.common.list_update adds three times a margin of dpi(4)
+-- for each item:
+-- @tfield number list_interspace
+local list_interspace = theme.xresources.apply_dpi(4) * 3
 
 --- Allows user to specify custom parameters for prompt.run function
--- (like colors). This will merge with the default parameters, overriding affected values.
+-- (like colors).
 -- @see awful.prompt
 menubar.prompt_args = {}
 
@@ -154,10 +136,10 @@ end
 
 --- Get how the menu item should be displayed.
 -- @param o The menu item.
--- @return item name, item background color, background image, item icon, item args.
+-- @return item name, item background color, background image, item icon.
 local function label(o)
     local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
-    local bg_color = theme.menubar_tag_bg_normal or theme.menu_tag_bg_normal or theme.tag_bg_normal or "#00000000" -- option to set tag background color different than background color. Needed because the normal way would make tags darker than the background anyways -> was annoying
+    local bg_color = theme.menubar_tag_bg_normal or theme.menu_tag_bg_normal or theme.tag_bg_normal or "#00000000" -- option to ste ttag background color different than background color. Needed because the normal way would make tags darker than the background anyways -> was annoying
     if o.focused then
         fg_color = theme.menubar_fg_focus or theme.menu_fg_focus or theme.fg_focus
         bg_color = theme.menubar_bg_focus or theme.menu_bg_focus or theme.bg_focus
@@ -165,8 +147,7 @@ local function label(o)
     return colortext(gstring.xml_escape(o.name), fg_color),
            bg_color,
            nil,
-           o.icon,
-           o.icon and {icon_size=20} -- TODO: dirty fix
+           nil-- o.icon
 end
 
 local function load_count_table()
@@ -231,11 +212,6 @@ end
 -- @tparam number|screen scr Screen
 -- @return table List of items for current page.
 local function get_current_page(all_items, query, scr)
-
-    local compute_text_width = function(text, s)
-        return wibox.widget.textbox.get_markup_geometry(text, s, instance.font)['width']
-    end
-
     scr = get_screen(scr)
     if not instance.prompt.width then
         instance.prompt.width = compute_text_width(instance.prompt.prompt, scr)
@@ -246,10 +222,9 @@ local function get_current_page(all_items, query, scr)
     if not menubar.right_label_width then
         menubar.right_label_width = compute_text_width(menubar.right_label, scr)
     end
-    local border_width = theme.menubar_border_width or theme.menu_border_width or 0
     --local available_space = instance.geometry.width - menubar.right_margin -
     --    menubar.right_label_width - menubar.left_label_width -
-    --    compute_text_width(query..' ', scr) - instance.prompt.width - border_width * 2
+    --    compute_text_width(query, scr) - instance.prompt.width
         -- space character is added as input cursor placeholder
     local extra_width = menubar.left_label_width
     local subtracted = false
@@ -259,13 +234,13 @@ local function get_current_page(all_items, query, scr)
     current_page = {}
     for i, item in ipairs(all_items) do
         item.width = item.width or (
-            compute_text_width(label(item), scr) +
-            (item.icon and (item_height + list_spacing) or 0)
-        ) -- TODO: 20 = dirty fix
-        local total_height = item_height * math.floor(item.width / menubar.geometry.width + 1)
-        if width_sum + total_height > available_space then  -- TODO: 20 = dirty fix
+            compute_text_width(item.name, scr) +
+            (item.icon and (item_height + list_interspace) or 0)
+	) -- TODO: 20 = dirty fix
+	local total_height = item_height * math.floor(item.width / menubar.geometry.width + 1)
+        if width_sum + total_height > available_space then
             if current_item < i then
-                table.insert(current_page, { name = menubar.right_label, ncon = nil })
+                table.insert(current_page, { name = menubar.right_label, icon = nil })
                 break
             end
             current_page = { { name = menubar.left_label, icon = nil }, item, }
@@ -332,45 +307,37 @@ local function menulist_update(scr)
     end
 
     -- Add the applications according to their name and cmdline
-    local add_entry = function(entry)
-        entry.focused = false
-        if not current_category or entry.category == current_category then
+    for _, v in ipairs(menubar.menu_entries) do
+        v.focused = false
+        if not current_category or v.category == current_category then
 
             -- check if the query matches either the name or the commandline
             -- of some entry
-            if string.match(entry.name, pattern)
-                or string.match(entry.cmdline, pattern) then
+            if string.match(v.name, pattern)
+                or string.match(v.cmdline, pattern) then
 
-                entry.weight = 0
-                entry.prio = PRIO_NONE
+                v.weight = 0
+                v.prio = PRIO_NONE
 
                 -- get use count from count_table if present
                 -- and use it as weight
-                if string.len(pattern) > 0 and count_table[entry.name] ~= nil then
-                    entry.weight = tonumber(count_table[entry.name])
+                if string.len(pattern) > 0 and count_table[v.name] ~= nil then
+                    v.weight = tonumber(count_table[v.name])
                 end
 
                 -- check for prefix match
-                if string.match(entry.name, "^" .. pattern)
-                    or string.match(entry.cmdline, "^" .. pattern) then
+                if string.match(v.name, "^" .. pattern)
+                    or string.match(v.cmdline, "^" .. pattern) then
                     -- increase default priority
-                    entry.prio = PRIO_NONE + 1
+                    v.prio = PRIO_NONE + 1
                 else
-                    entry.prio = PRIO_NONE
+                    v.prio = PRIO_NONE
                 end
 
-                table.insert (command_list, entry)
+                table.insert (command_list, v)
             end
         end
     end
-
-    -- Add entries if required
-    if query ~= "" or menubar.match_empty then
-        for _, v in ipairs(menubar.menu_entries) do
-            add_entry(v)
-        end
-    end
-
 
     local function compare_counts(a, b)
         if a.prio == b.prio then
@@ -403,7 +370,6 @@ end
 
 --- Refresh menubar's cache by reloading .desktop files.
 -- @tparam[opt] screen scr Screen.
--- @staticfct menubar.refresh
 function menubar.refresh(scr)
     scr = get_screen(scr or awful.screen.focused() or 1)
     menubar.menu_gen.generate(function(entries)
@@ -427,35 +393,36 @@ local function prompt_keypressed_callback(mod, key, comm)
         current_item = current_item + 1
         return true
     elseif key == "Left" or key == "Right" then
-        local tmp_sum = 0
-        local index = nil
-        local index_gen = function(tbl)
-            local idx = {}
-            for k,v in pairs(tbl) do
-                idx[v] = k
+	    local tmp_sum = 0
+	    local index = nil
+	    local index_gen = function(tbl)
+		    local idx = {}
+		    for k,v in pairs(tbl) do
+			    idx[v] = k
+		    end
+		    return idx
             end
-            return idx
-        end
-        if current_page[1]["name"] == menubar.left_label then
-            tmp_sum = 1
-            if key == "Left" then
-                if not index then
-                    index = index_gen(current_page)
-                end
-                tmp_sum = #current_page - index[shownitems[current_item]]
-            end
-        elseif key == "Left" then
-            tmp_sum = #current_page - current_item
-        end
-        tmp_sum = tmp_sum + 1
-        if current_page[#current_page]["name"] == menubar.right_label and key == "Right" then
-            if not index then
-                index = index_gen(current_page)
-            end
-            tmp_sum = index[shownitems[current_item]]
-        end
-        current_item = current_item + (#current_page - tmp_sum) * (key == "Right" and 1 or -1)
-        return true
+	    if current_pagqe[1]["name"] == menubar.left_label then
+		    tmp_sum = 1
+		    if key == "Left" then
+			    if not index then
+				    index = index_gen(current_page)
+			    end
+			    tmp_sum = #current_page - index[shownitems[current_item]]
+		    end
+	    elseif key == "Left" then
+		    tmp_sum = tmp_sum + 1
+	    end
+	    tmp_sum = tmp_sum + 1
+	    if current_page[#current_page]["name"] == menubar.right_label and key == "Right" then
+		    if not index then
+			    index = index_gen(current_page)
+		    end
+		    tmp_sum = index[shownitems[current_item]]
+	    end
+	    current_item = current_item + (#current_page - tmp_sum) * (key == "Right" and 1 or -1)
+	    return true
+
     elseif key == "BackSpace" then
         if comm == "" and current_category then
             current_category = nil
@@ -490,14 +457,12 @@ end
 
 --- Show the menubar on the given screen.
 -- @param[opt] scr Screen.
--- @staticfct menubar.show
 function menubar.show(scr)
     scr = get_screen(scr or awful.screen.focused() or 1)
     local fg_color = theme.menubar_fg_normal or theme.menu_fg_normal or theme.fg_normal
     local bg_color = theme.menubar_bg_normal or theme.menu_bg_normal or theme.bg_normal
     local border_width = theme.menubar_border_width or theme.menu_border_width or 0
     local border_color = theme.menubar_border_color or theme.menu_border_color
-    local font = theme.menubar_font or theme.font or "Monospace 10"
 
     if not instance then
         -- Add to each category the name of its key in all_categories
@@ -516,16 +481,14 @@ function menubar.show(scr)
                 fg = fg_color,
                 border_width = border_width,
                 border_color = border_color,
-                font = font,
             },
             widget = common_args.w,
             prompt = awful.widget.prompt(),
             query = nil,
             count_table = nil,
-            font = font,
         }
         local layout = wibox.layout.fixed.vertical()
-        layout:add(instance.prompt)  
+        layout:add(instance.prompt)
         layout:add(instance.widget)
         instance.wibox:set_widget(layout)
     end
@@ -541,7 +504,7 @@ function menubar.show(scr)
     local geometry = menubar.geometry
     instance.geometry = {x = geometry.x or scrgeom.x,
                              y = geometry.y or scrgeom.y,
-                             height = geometry.height or gmath.round(theme.get_font_height(font) * 1.5),
+                             height = geometry.height or gmath.round(theme.get_font_height() * 1.5),
                              width = (geometry.width or scrgeom.width) - border_width * 2}
     instance.wibox:geometry(instance.geometry)
 
@@ -549,9 +512,14 @@ function menubar.show(scr)
     current_category = nil
     menulist_update(scr)
 
-    local default_prompt_args = {
+    local prompt_args = menubar.prompt_args or {}
+
+    local tmp = instance.prompt.widget
+    tmp.forced_height = 18
+
+    awful.prompt.run(setmetatable({
         prompt              = "Run: ",
-        textbox             = instance.prompt.widget,
+        textbox             = tmp,
         completion_callback = awful.completion.shell,
         history_path        = gfs.get_cache_dir() .. "/history_menu",
         done_callback       = menubar.hide,
@@ -560,17 +528,12 @@ function menubar.show(scr)
             menulist_update(scr)
         end,
         keypressed_callback = prompt_keypressed_callback
-    }
-    default_prompt_args.textbox.forced_height = 18
-
-    awful.prompt.run(setmetatable(menubar.prompt_args, {__index=default_prompt_args}))
-
+    }, {__index=prompt_args}))
 
     instance.wibox.visible = true
 end
 
 --- Hide the menubar.
--- @staticfct menubar.hide
 function menubar.hide()
     if instance then
         instance.wibox.visible = false
