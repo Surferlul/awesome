@@ -113,6 +113,10 @@ menubar.geometry = { width = nil,
                      x = nil,
                      y = nil }
 
+menubar.geometry_override = { width = nil,
+                              height = nil,
+                              x = nil,
+                              y = nil }
 --- Width of blank space left in the right side.
 -- @tfield number right_margin
 menubar.right_margin = theme.xresources.apply_dpi(8)
@@ -538,6 +542,7 @@ function menubar.show(scr)
 
     -- Set position and size
     local scrgeom = scr.workarea
+    menubar.geometry = { height = menubar.geometry_override.height or awful.screen.focused().geometry.height, width = menubar.geometry_override.width or 200, x = (menubar.geometry_override.x or 0) + awful.screen.focused().geometry.x , y = menubar.geometry_override.y}
     local geometry = menubar.geometry
     instance.geometry = {x = geometry.x or scrgeom.x,
                              y = geometry.y or scrgeom.y,
