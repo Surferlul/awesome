@@ -14,10 +14,7 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
-local menu_width = 200
-local tmp_screen = { 1080, 1920 }
-menubar.geometry = { height = tmp_screen[1], width = menu_width, x = 20 }
-
+menubar.geometry_override = { width = 200, x = 20 }
 
 --local hotkeys_popup = require("awful.hotkeys_popup")
 local hotkeys = require("awful.hotkeys_popup");
