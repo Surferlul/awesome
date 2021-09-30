@@ -19,6 +19,7 @@ local glib = lgi.GLib
 local w_textbox = require("wibox.widget.textbox")
 local gdebug = require("gears.debug")
 local protected_call = require("gears.protected_call")
+local gstring = require("gears.string")
 local unpack = unpack or table.unpack -- luacheck: globals unpack (compatibility with Lua 5.1)
 
 local utils = {}
@@ -31,7 +32,6 @@ local utils = {}
 -- Options section
 
 --- Terminal which applications that need terminal would open in.
--- @param[opt="xterm"] string
 utils.terminal = 'xterm'
 
 --- The default icon for applications that don't provide any icon in
@@ -39,7 +39,6 @@ utils.terminal = 'xterm'
 local default_icon = nil
 
 --- Name of the WM for the OnlyShowIn entry in the .desktop file.
--- @param[opt="awesome"] string
 utils.wm_name = "awesome"
 
 -- Maps keys in desktop entries to suitable getter function.
@@ -128,11 +127,10 @@ local all_icon_sizes = {
     '16x16'
 }
 
---- List of supported icon exts.
-local supported_icon_file_exts = { png = 1, xpm = 2, svg = 3 }
+--- List of supported icon formats.
+local supported_icon_formats = { png = 1, xpm = 2, svg = 3 }
 
 local icon_lookup_path = nil
-
 --- Get a list of icon lookup paths.
 -- @treturn table A list of directories, without trailing slash.
 local function get_icon_lookup_path()
@@ -200,7 +198,6 @@ end
 
 --- Remove CR newline from the end of the string.
 -- @param s string to trim
--- @staticfct menubar.utils.rtrim
 function utils.rtrim(s)
     if not s then return end
     if string.byte(s, #s) == 13 then
@@ -212,34 +209,34 @@ end
 --- Lookup an icon in different folders of the filesystem.
 -- @tparam string icon_file Short or full name of the icon.
 -- @treturn string|boolean Full name of the icon, or false on failure.
--- @staticfct menubar.utils.lookup_icon_uncached
 function utils.lookup_icon_uncached(icon_file)
     if not icon_file or icon_file == "" then
         return false
     end
 
-    local icon_file_ext = icon_file:match(".+%.(.*)$")
-    if icon_file:sub(1, 1) == '/' and supported_icon_file_exts[icon_file_ext] then
-        -- If the path to the icon is absolute do not perform a lookup [nil if unsupported ext or missing]
+    local icon_file_ext = icon_file:match(".*%.(.-)$")
+    if icon_file:sub(1, 1) == '/' and supported_icon_formats[icon_file_ext] then
+        -- If the path to the icon is absolute and its format is
+        -- supported, do not perform a lookup.
         return gfs.file_readable(icon_file) and icon_file or nil
     else
-        -- Look for the requested file in the lookup path
         for _, directory in ipairs(get_icon_lookup_path()) do
-            local possible_file = directory .. "/" .. icon_file
-            -- Check to see if file exists if requested with a valid extension
-            if supported_icon_file_exts[icon_file_ext] and gfs.file_readable(possible_file) then
-                return possible_file
+            local directory_file = directory .. "/" .. icon_file
+            if supported_icon_formats[icon_file_ext] and
+                    gfs.file_readable(directory_file) then
+                return directory_file
             else
-                -- Find files with any supported extension if icon specified without, eg: 'firefox'
-                for ext, _ in pairs(supported_icon_file_exts) do
-                    local possible_file_new_ext = possible_file .. "." .. ext
-                    if gfs.file_readable(possible_file_new_ext) then
-                        return possible_file_new_ext
+                -- Icon is probably specified without path and format,
+                -- like 'firefox'. Try to add supported extensions to
+                -- it and see if such file exists.
+                for format, _ in pairs(supported_icon_formats) do
+                    local possible_file = directory_file .. "." .. format
+                    if gfs.file_readable(possible_file) then
+                        return possible_file
                     end
                 end
             end
         end
-        -- No icon found
         return false
     end
 end
@@ -248,7 +245,6 @@ local lookup_icon_cache = {}
 --- Lookup an icon in different folders of the filesystem (cached).
 -- @param icon Short or full name of the icon.
 -- @return full name of the icon.
--- @staticfct menubar.utils.lookup_icon
 function utils.lookup_icon(icon)
     if not lookup_icon_cache[icon] and lookup_icon_cache[icon] ~= false then
         lookup_icon_cache[icon] = utils.lookup_icon_uncached(icon)
@@ -259,7 +255,6 @@ end
 --- Parse a .desktop file.
 -- @param file The .desktop file.
 -- @return A table with file entries.
--- @staticfct menubar.utils.parse_desktop_file
 function utils.parse_desktop_file(file)
     local program = { show = true, file = file }
 
@@ -356,7 +351,6 @@ end
 -- @tparam function callback Will be fired when all the files were parsed
 -- with the resulting list of menu entries as argument.
 -- @tparam table callback.programs Paths of found .desktop files.
--- @staticfct menubar.utils.parse_dir
 function utils.parse_dir(dir_path, callback)
 
     local function get_readable_path(file)
@@ -409,8 +403,6 @@ function utils.parse_dir(dir_path, callback)
     end)
 end
 
--- luacov: disable
-
 function utils.compute_textbox_width(textbox, s)
     gdebug.deprecate("Use 'width, _ = textbox:get_preferred_size(s)' directly.", {deprecated_in=4})
     s = screen[s or mouse.screen]
@@ -418,12 +410,14 @@ function utils.compute_textbox_width(textbox, s)
     return w
 end
 
-function utils.compute_text_width(text, s, font)
-    gdebug.deprecate("Use 'width = textbox.get_markup_geometry(text, s, font)['width']'.", {deprecated_in=4})
-    return w_textbox.get_markup_geometry(text, s, font)['width']
+--- Compute text width.
+-- @tparam str text Text.
+-- @tparam number|screen s Screen
+-- @treturn int Text width.
+function utils.compute_text_width(text, s)
+    local w, _ = w_textbox(gstring.xml_escape(text)):get_preferred_size(s)
+    return w
 end
-
--- luacov: enable
 
 return utils
 

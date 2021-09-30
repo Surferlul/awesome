@@ -12,6 +12,7 @@ CACHE_DIR="/tmp/surferlul_awesome"
 mkdir $CACHE_DIR
 echo "Downloading AwesomeWM Configs"
 git clone https://github.com/Surferlul/awesome.git $CACHE_DIR
+git --git-dir $CACHE_DIR checkout 4.3
 [ -d "$HOME/.config/awesome" ] && echo "Backing up previous configs" && tar cf $CACHE_DIR/previous.tar $HOME/.config/awesome/ && echo "Removing previous configs" && rm -rf $HOME/.config/awesome/
 echo "Downloading Vicious widgets for AwesomeWM"
 git -C $CACHE_DIR submodule init vicious
