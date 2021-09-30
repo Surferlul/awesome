@@ -13,7 +13,7 @@ local gears = require("gears")
 
 -- {{{ Main
 local theme = {}
-theme.dir = themes_path.."zenburn/"
+theme.dir = themes_path.."blueish/"
 theme.wallpaper = { theme.dir .. "dreams_1920x1080.png" , theme.dir .. "dreams.png" }
 -- }}}
 
@@ -39,7 +39,7 @@ theme.hotkeys_description_font = "Indie Flower Bold 10"
 theme.hotkeys_border_width = 2
 theme.hotkeys_border_color = "#6f6f6f55"
 theme.hotkeys_shape = function(cr, width, height) gears.shape.rounded_rect(cr, width, height, 15) end
-theme.menubar_bg_normal = "#111122CC"
+theme.menubar_bg_normal = "#111122" --CC"
 theme.menubar_tag_bg_normal = "#00000000"
 theme.menubar_fg_normal = "#FFBBBB"
 theme.menubar_bg_focus  = "#333344FF"
@@ -53,10 +53,12 @@ theme.menu_fg_focus  = "#BBBBFF"
 -- {{{ Borders
 theme.shape = function(cr, width, height) gears.shape.rounded_rect(cr, width, height, 4) end
 theme.useless_gap   = 2
-theme.border_width  = 2
-theme.border_width_focus = 2
-theme.border_normal = "#00000077" -- basically no border
-theme.border_focus = "#00000000" -- slightly more lit up than the shadow
+theme.border_width  = 1
+theme.border_width_focus = 1
+--theme.border_normal = "#00000077" -- basically no border
+--theme.border_focus = "#00000000" -- slightly more lit up than the shadow
+theme.border_normal = "#554477"
+theme.border_focus = "#332244"
 theme.border_marked = "#CC939355"
 -- }}}
 
