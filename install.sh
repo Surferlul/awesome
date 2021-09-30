@@ -14,7 +14,8 @@ echo "Downloading AwesomeWM Configs"
 git clone https://github.com/Surferlul/awesome.git $CACHE_DIR
 [ -d "$HOME/.config/awesome" ] && echo "Backing up previous configs" && tar cf $CACHE_DIR/previous.tar $HOME/.config/awesome/ && echo "Removing previous configs" && rm -rf $HOME/.config/awesome/
 echo "Downloading Vicious widgets for AwesomeWM"
-git clone https://github.com/vicious-widgets/vicious.git $CACHE_DIR/vicious
+git -C $CACHE_DIR submodule init vicious
+git -C $CACHE_DIR submodule update
 echo "Moving configs to install location"
 mv $CACHE_DIR $HOME/.config/awesome
 [ "$1" != "--preserve-git" ] && echo "Removing git from configs" && rm -rf $HOME/.config/awesome/.git
