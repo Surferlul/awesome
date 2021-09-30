@@ -1,0 +1,6 @@
+[submodule "themes/blueish"]
+	path = themes/blueish
+	url = https://github.com/surferlul/blueish
+[submodule "vicious"]
+	path = vicious
+	url = https://github.com/vicious-widgets/vicious.git

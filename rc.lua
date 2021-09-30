@@ -240,7 +240,7 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 --beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
-local theme_path = string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), "zenburn")
+local theme_path = string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), "blueish")
 beautiful.init(theme_path)
 beautiful.font = "Indie Flower Bold 12"
 --local cr = cairo.Context()
@@ -249,7 +249,7 @@ beautiful.font = "Indie Flower Bold 12"
 
 
 -- This is used later as the default terminal and editor to run.
-terminal = "konsole"
+terminal = "term" -- symbolic link to the terminal you are currently using
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -786,6 +786,11 @@ clientkeys = gears.table.join(
     awful.key({ modkey,           }, "f",
         function (c)
             c.fullscreen = not c.fullscreen
+            if c.fullscreen then
+                c.shape = nil
+            else
+                c.shape = beautiful.shape
+            end
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
@@ -814,6 +819,11 @@ clientkeys = gears.table.join(
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized = not c.maximized
+            if c.maximized then
+                c.shape = nil
+            else
+                c.shape = beautiful.shape
+            end
             c:raise()
         end ,
         {description = "(un)maximize", group = "client"}),
@@ -966,7 +976,11 @@ client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     -- if not awesome.startup then awful.client.setslave(c) end
-    c.shape = beautiful.shape
+    if not (c.maximized or c.fullscreen) then
+        c.shape = beautiful.shape
+    else
+        c.shape = nil
+    end
     if awesome.startup
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
