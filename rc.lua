@@ -604,22 +604,22 @@ s.mytaglist = awful.widget.taglist {
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.container.rotate,
-	direction = "west",
-	{
-	    layout = wibox.layout.align.vertical,
+	    direction = "west",
 	    {
-		layout = wibox.layout.constraint,
-		strategy = "max",
-		height = 18,
-		{
-	            layout = wibox.layout.align.horizontal,
+	        layout = wibox.layout.align.vertical,
+	        {
+    		    layout = wibox.layout.constraint,
+	     	    strategy = "max",
+    		    height = 18,
+	        	{
+	                layout = wibox.layout.align.horizontal,
                     { -- Left widgets
                         layout = wibox.layout.fixed.horizontal,
-			{
-			    layout = wibox.container.rotate,
-			    direction = "east",
-			    mylauncher,
-			},
+            			{
+			                layout = wibox.container.rotate,
+            			    direction = "east",
+			                mylauncher,
+            			},
                         s.mytaglist,
                         s.mypromptbox,
                     },
@@ -630,40 +630,40 @@ s.mytaglist = awful.widget.taglist {
                         memwidget,
                         swapwidget,
                         cpuwidget,
-			{
-			    {
+			            {
+			                {
                                 layout = wibox.container.rotate,
                                 direction = "east",
                                 mykeyboardlayout.widget,
-		            },
-			    {
+		                    },
+			                {
                                 layout = wibox.container.rotate,
-			        direction = "east",
+			                    direction = "east",
                                 datewidget,
-		            },
-			    layout = wibox.layout.fixed.horizontal,
-			    spacing = -5,
+    	    	            },
+	    	        	    layout = wibox.layout.fixed.horizontal,
+		    	            spacing = -5,
                         },
                         s.mylayoutbox,
                     },
                 },
-	    },
-	    {
-		layout = wibox.layout.constraint,
-		{
-		    layout = wibox.layout.flex.horizontal,
+            },
+    	    {
+        		layout = wibox.container.constraint,
+	        	{
+		            layout = wibox.layout.flex.horizontal,
                     {
                         layout = wibox.container.rotate,
-			direction = "north",
-			batbox,
-		    },
-		    {
+    	                direction = "north",
+	    	    	    batbox,
+		            },
+    		        {
                         layout = wibox.container.rotate,
-			direction = "south",
+    		    	    direction = "south",
                         batbox,
-		    }
-		}
-	    }
+    	    	    }
+	    	    }
+    	    }
         }
     }
 end)
